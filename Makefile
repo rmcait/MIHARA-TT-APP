@@ -18,3 +18,6 @@ down:
 
 restart:
 	docker-compose down && docker-compose up -d --build
+
+app:
+	docker exec -it mihara-tt-app bash
