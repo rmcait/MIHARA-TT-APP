@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Employee\TableController;
+use App\Http\Controllers\UserController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -16,5 +18,25 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+Route::get('/employee/tables', [TableController::class, 'index'])->name('employee.tables');
+Route::post('/employee/tables/{id}/toggle', [TableController::class, 'toggleStatus'])->name('employee.toggle');
+
+// routes/web.php または routes/api.php に追加
+
+Route::get('/employee/tables/statuses', [TableController::class, 'getTableStatuses']);
+Route::get('/employee/waiting-lists/statuses', [TableController::class, 'getWaitingListStatuses']);
+
+Route::post('/employee/waiting-lists/{id}/toggle', [TableController::class, 'toggleWaitingStatus']);
+
+// web.php
+Route::get('/user/tables', [UserController::class, 'index']);
+
+Route::get('/user/fetch-tables', [UserController::class, 'fetchTableStatuses']);
+Route::get('/user/fetch-waitinglists', [UserController::class, 'fetchWaitingLists']);
+
+Route::post('/user/trigger-auto-update', [UserController::class, 'triggerAutoUpdate']);
+
+
 
 require __DIR__.'/auth.php';

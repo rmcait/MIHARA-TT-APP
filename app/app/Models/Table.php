@@ -22,4 +22,11 @@ class Table extends Model
             self::STATUS_IN_USE => '利用中',
         ];
     }
+
+    // ✅ ここに追記（WaitingListとのリレーション）
+    public function waitingLists()
+    {
+        return $this->hasMany(WaitingList::class);
+    }
+
 }
