@@ -1,9 +1,9 @@
 init:
 	docker-compose up -d --build
-	sleep 20
-	docker-compose exec app composer create-project --prefer-dist laravel/laravel .
-	docker-compose exec app bash -c "cd /var/www/html && cp .env.example .env && php artisan key:generate"
-
+	sleep 10
+	docker-compose exec app composer install
+	docker-compose exec app cp .env.example .env
+	docker-compose exec app php artisan key:generate
 breeze:
 	docker-compose exec app composer require laravel/breeze --dev
 	docker-compose exec app php artisan breeze:install
