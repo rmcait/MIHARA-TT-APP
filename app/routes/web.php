@@ -26,12 +26,12 @@ Route::post('/employee/tables/{id}/toggle', [TableController::class, 'toggleStat
 
 Route::get('/employee/tables/statuses', [TableController::class, 'getTableStatuses']);
 Route::get('/employee/waiting-lists/statuses', [TableController::class, 'getWaitingListStatuses']);
-
+Route::get('/employee/timeslot-context', [TableController::class, 'getTimeSlotContext']);
 Route::post('/employee/waiting-lists/{id}/toggle', [TableController::class, 'toggleWaitingStatus']);
 
 // web.php
 Route::get('/user/tables', [UserController::class, 'index']);
-
+Route::get('/user/time-slot-context', [UserController::class, 'getTimeSlotContext']);
 Route::get('/user/fetch-tables', [UserController::class, 'fetchTableStatuses']);
 Route::get('/user/fetch-waitinglists', [UserController::class, 'fetchWaitingLists']);
 

@@ -15,7 +15,8 @@ class TableController extends Controller
         $tables = Table::all();
         // 全待機リストの状態を取得（テーブルとのリレーションも取得）
         $waitingLists = WaitingList::with('table')->get();
-        return view('employee.tables', compact('tables', 'waitingLists'));
+        $timeSlotContext = WaitingList::getTimeSlotWithContext(); 
+        return view('employee.tables', compact('tables', 'waitingLists', 'timeSlotContext'));
     }
 
     // 利用状況を切り替える処理（AJAX用）
@@ -61,4 +62,11 @@ class TableController extends Controller
      {
          return response()->json(WaitingList::select('id', 'status')->get());
      }
+
+     // 現在と次のタイムスロット情報を返す
+        public function getTimeSlotContext()
+        {
+            $timeSlotContext = WaitingList::getTimeSlotWithContext();
+            return response()->json($timeSlotContext);
+        }
 }

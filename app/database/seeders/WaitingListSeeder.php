@@ -14,8 +14,8 @@ class WaitingListSeeder extends Seeder
      */
     public function run(): void
     {
-        $timeSlots = WaitingList::getCurrentAndPreviousTimeSlot();
-        $currentSlot = $timeSlots['current'];
+        $timeSlots = WaitingList::getTimeSlotWithContext();
+        $currentSlot = $timeSlots['next'];
 
         foreach (Table::all() as $table) {
                 WaitingList::create([

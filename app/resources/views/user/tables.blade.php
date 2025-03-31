@@ -126,8 +126,7 @@
     display: flex;
     gap: 2rem; /* 要素間の隙間 */
     justify-content: center; /* アイテムを中央に配置 */
-    margin-top: 2rem;
-    border-radius: 15px;
+    
 }
 
 .table-box {
@@ -176,7 +175,7 @@
     .table-box {
         width: 10%;
         height: 60px;
-        gap: 0.03rem;
+        gap: 10px;
     }
 }
     </style>
@@ -188,14 +187,14 @@
 </header>
 
 <h2>現在の利用状況</h2>
-<p style="text-align: center;">
-    - 
-    @if($timeSlotContext['current'] === 'closed')
-        営業時間外
-    @else
-        {{ $timeSlotContext['current'] }}
-    @endif
-    -
+<p id="current-slot" style="text-align: center;">
+  - 
+  @if($timeSlotContext['current'] === 'closed')
+      営業時間外
+  @else
+      {{ $timeSlotContext['current'] }}
+  @endif
+  -
 </p>
 
 <table id="table-status-view">
@@ -203,7 +202,7 @@
         <tr>
             <th>テーブル番号</th>
             <th>状態</th>
-            <th>待機状況<br>{{ $timeSlotContext['next'] }}</th>
+            <th>待機状況<br id="next-slot">{{ $timeSlotContext['next'] }}</th>
         </tr>
     </thead>
     <tbody>
@@ -229,6 +228,14 @@
 
 <h2>卓球台の見取り図</h2>
 
+<div style="text-align: center; max-width: 960px; /* 背景の横幅を制限 */
+    width: 100%;
+    background: #f9f9f9;
+    margin: 0 auto;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    padding-top: 8px;">奥</div>
+
 <div class="table-layout">
     @foreach ($tables as $table)
         <div class="table-box {{ $table->status }}" data-id="{{ $table->id }}">
@@ -236,6 +243,14 @@
         </div>
     @endforeach
 </div>
+
+<div style="text-align: center; max-width: 960px; /* 背景の横幅を制限 */
+    width: 100%;
+    background: #f9f9f9;
+    margin: 0 auto;
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+    padding-bottom: 8px;">入り口</div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
@@ -294,6 +309,18 @@
         error: function () {
             console.error('待機リストの取得に失敗しました');
         }
+    });
+
+    $.get('/user/time-slot-context', function (res) {
+        // current の更新
+        if (res.current === 'closed') {
+            $('#current-slot').text('- 営業時間外 -');
+        } else {
+            $('#current-slot').text(`- ${res.current} -`);
+        }
+
+        // next の更新
+        $('#next-slot').text(`- ${res.next} -`);
     });
 
 }, 5000);  // 5秒ごとに更新

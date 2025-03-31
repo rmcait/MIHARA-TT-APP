@@ -169,7 +169,15 @@ tbody tr:last-child td:last-child {
     <h1 class="facility-title">美原総合体育館 卓球室</h1>
 </header>
 <h2>利用状況</h2>
-
+<p id="current-slot" style="text-align: center;">
+    - 
+    @if($timeSlotContext['current'] === 'closed')
+        営業時間外
+    @else
+        {{ $timeSlotContext['current'] }}
+    @endif
+    -
+</p>
 <table>
     <thead>
         <tr>
@@ -189,7 +197,11 @@ tbody tr:last-child td:last-child {
                 </td>
                 <td>
                     <label class="switch">
-                        <input type="checkbox" class="toggle-btn" data-id="{{ $table->id }}" {{ $table->status === 'in_use' ? 'checked' : '' }}>
+                        <<input type="checkbox"
+                            class="toggle-btn"
+                            data-id="{{ $table->id }}"
+                            {{ $table->status === 'in_use' ? 'checked' : '' }}
+                            {{ $timeSlotContext['current'] === 'closed' ? 'disabled' : '' }}>
                         <span class="slider"></span>
                     </label>
                 </td>
@@ -199,7 +211,9 @@ tbody tr:last-child td:last-child {
 </table>
 
 <h2 style="margin-top: 2rem;">待ち状況</h2>
-
+<p id="next-slot" style="text-align: center;">
+    - {{ $timeSlotContext['next'] }} -
+</p>
 <table>
     <thead>
         <tr>
@@ -219,7 +233,11 @@ tbody tr:last-child td:last-child {
             </td>
             <td>
                 <label class="switch">
-                    <input type="checkbox" class="toggle-waiting-btn" data-id="{{ $waiting->id }}" {{ $waiting->status === 'waiting' ? 'checked' : '' }}>
+                <input type="checkbox"
+                    class="toggle-waiting-btn"
+                    data-id="{{ $waiting->id }}"
+                    {{ $waiting->status === 'waiting' ? 'checked' : '' }}
+                    {{ $timeSlotContext['current'] === 'closed' ? 'disabled' : '' }}> 
                     <span class="slider"></span>
                 </label>
             </td>
@@ -336,6 +354,12 @@ setInterval(() => {
                 checkbox.prop('checked', false);
             }
         });
+    });
+
+    $.get('/employee/timeslot-context', function (slotContext) {
+        const currentText = slotContext.current === 'closed' ? '営業時間外' : slotContext.current;
+        $('#current-slot').text(`- ${currentText} -`);
+        $('#next-slot').text(`- ${slotContext.next} -`);
     });
 }, 5000); // 5秒ごとに監視して更新
 </script>
