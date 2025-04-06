@@ -1,7 +1,6 @@
 init:
-	init:
 	docker-compose up -d --build
-	sleep 10
+	sleep 5
 	docker-compose exec app composer install
 	docker-compose exec app cp .env.example .env
 	docker-compose exec app php artisan key:generate
