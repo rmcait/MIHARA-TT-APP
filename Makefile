@@ -1,9 +1,11 @@
 init:
+	init:
 	docker-compose up -d --build
 	sleep 10
 	docker-compose exec app composer install
 	docker-compose exec app cp .env.example .env
 	docker-compose exec app php artisan key:generate
+	docker-compose exec app php artisan migrate --seed
 breeze:
 	docker-compose exec app composer require laravel/breeze --dev
 	docker-compose exec app php artisan breeze:install
