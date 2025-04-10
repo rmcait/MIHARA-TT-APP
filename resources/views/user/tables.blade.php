@@ -202,7 +202,7 @@
         <tr>
             <th>テーブル番号</th>
             <th>状態</th>
-            <th>待機状況<br id="next-slot">{{ $timeSlotContext['next'] }}</th>
+            <th>待機状況<br><span id="next-slot">{{ $timeSlotContext['next'] }}</span></th>
         </tr>
     </thead>
     <tbody>
