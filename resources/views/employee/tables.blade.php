@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>テーブル状況管理</title>
+    <title>従業員利用管理</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <style>
     body {
@@ -166,7 +166,7 @@ tbody tr:last-child td:last-child {
 </head>
 <body>
 <header>
-    <h1 class="facility-title">美原総合体育館 卓球室</h1>
+    <h1 class="facility-title">美原体育館 卓球室</h1>
 </header>
 <h2>利用状況</h2>
 <p id="current-slot" style="text-align: center;">
