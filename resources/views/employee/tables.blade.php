@@ -261,6 +261,7 @@ tbody tr:last-child td:last-child {
                 _token: $('meta[name="csrf-token"]').attr('content')
             },
             success: function (res) {
+                $('#error-message').text(''); // エラーメッセージをクリア
                 // 状態をテキストで反映
                 if (res.status === 'in_use') {
                     statusSpan.text('利用中').css('color', '#ff3b30');
@@ -271,9 +272,17 @@ tbody tr:last-child td:last-child {
                 }
                 console.log('状態更新: ', res.status);
             },
-            error: function () {
-                alert('更新に失敗しました');
+            error: function (xhr) {
+            if (xhr.status === 422 && xhr.responseJSON && xhr.responseJSON.error) {
+                $('#error-message').text(xhr.responseJSON.error);
+
+                // チェックボックスを「押し返す」（状態を元に戻す）
+                checkbox.prop('checked', !checkbox.prop('checked'));
+            } else {
+                $('#error-message').text('予期せぬエラーが発生しました');
+                checkbox.prop('checked', !checkbox.prop('checked'));
             }
+        }
         });
     });
 
@@ -302,8 +311,16 @@ $('.toggle-waiting-btn').on('change', function () {
             console.log('待ち状態更新: ', res.status);
             console.log('対応するテーブルID: ', res.table_id); // table_idを出力
         },
-        error: function () {
-            alert('更新に失敗しました（待ち状況）');
+        error: function (xhr) {
+            if (xhr.status === 422 && xhr.responseJSON && xhr.responseJSON.error) {
+                alert(xhr.responseJSON.error);
+
+                // 状態を元に戻す（ONにしていたならOFFに戻す）
+                checkbox.prop('checked', !checkbox.prop('checked'));
+            } else {
+                alert('更新に失敗しました（待ち状況）');
+                checkbox.prop('checked', !checkbox.prop('checked'));
+            }
         }
     });
 });
@@ -363,6 +380,7 @@ setInterval(() => {
     });
 }, 5000); // 5秒ごとに監視して更新
 </script>
+
 
 </body>
 </html>
