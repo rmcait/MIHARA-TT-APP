@@ -27,11 +27,33 @@ class TableController extends Controller
 
         $currentSlotContext = $timesSlotContext['current'];
 
-        if ($currentSlotContext === 'closed') {
-            // 全テーブルをavailableにするだけ
-            Table::query()->update(['status' => Table::STATUS_AVAILABLE]);
-            
-        }
+        $now = now('Asia/Tokyo');
+        $today830 = $now->copy()->setTime(8, 30);
+
+        static $resetDone = false;
+
+    if (!$resetDone && $currentSlotContext === 'closed') {
+        Table::query()->update(['status' => Table::STATUS_AVAILABLE]);
+        $resetDone = true;
+    }
+
+    // currentが"closed"の場合 → 翌日 09:00 を超えるまでは切り替えNG
+    if ($currentSlotLabel === 'closed') {
+        $now = now('Asia/Tokyo');
+        $today9 = $now->copy()->setTime(9, 0);
+
+        // 今が今日の9:00より前なら、今日の9:00を使う
+        // 今が今日の9:00より後なら、明日の9:00を使う
+        $target9 = $now->gt($today9)
+            ? $now->copy()->addDay()->setTime(9, 0)
+            : $today9;
+
+    if ($now->lt($target9)) {
+        return response()->json([
+            'error' => '営業時間外です。切り替えは9:00以降に可能です。'
+        ], 422);
+    }
+}
 
         $table->status = $table->status === Table::STATUS_AVAILABLE
             ? Table::STATUS_IN_USE
@@ -55,10 +77,13 @@ class TableController extends Controller
 
     $today830 = $now->copy()->setTime(8, 30);
 
-        // まだ今日の8:30前かつcurrentがclosedだったらリセット
-        if ($now->lt($today830) && $currentSlotLabel === 'closed') {
-            WaitingList::query()->update(['status' => 'available']);
-        }
+        // ==== リセット処理 ====
+    static $resetDone = false;
+
+    if (!$resetDone && $currentSlotLabel === 'closed') {
+        WaitingList::query()->update(['status' => 'available']);
+        $resetDone = true;
+    }
 
     // next が "closed" の場合 → 翌日 08:30 を超えるまでは切り替えNG
     if ($nextSlotLabel === 'closed' || $nextSlotLabel === '09:00 ~ 11:00') {

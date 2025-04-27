@@ -280,12 +280,12 @@ tbody tr:last-child td:last-child {
             },
             error: function (xhr) {
             if (xhr.status === 422 && xhr.responseJSON && xhr.responseJSON.error) {
-                $('#error-message').text(xhr.responseJSON.error);
+                alert(xhr.responseJSON.error);
 
-                // チェックボックスを「押し返す」（状態を元に戻す）
+                // 状態を元に戻す（ONにしていたならOFFに戻す）
                 checkbox.prop('checked', !checkbox.prop('checked'));
             } else {
-                $('#error-message').text('予期せぬエラーが発生しました');
+                alert('更新に失敗しました（待ち状況）');
                 checkbox.prop('checked', !checkbox.prop('checked'));
             }
         }
