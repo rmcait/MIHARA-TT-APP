@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>従業員利用管理</title>
+    <title>テーブル状況管理</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <style>
     body {
@@ -166,7 +166,7 @@ tbody tr:last-child td:last-child {
 </head>
 <body>
 <header>
-    <h1 class="facility-title">美原体育館 卓球室</h1>
+    <h1 class="facility-title">美原総合体育館 卓球室</h1>
 </header>
 <h2>利用状況</h2>
 <p id="current-slot" style="text-align: center;">
@@ -197,11 +197,10 @@ tbody tr:last-child td:last-child {
                 </td>
                 <td>
                     <label class="switch">
-                        <<input type="checkbox"
-                            class="toggle-btn"
-                            data-id="{{ $table->id }}"
-                            {{ $table->status === 'in_use' ? 'checked' : '' }}
-                            {{ $timeSlotContext['current'] === 'closed' ? 'disabled' : '' }}>
+                    <input type="checkbox"
+                        class="toggle-btn"
+                        data-id="{{ $table->id }}"
+                        {{ $table->status === 'in_use' ? 'checked' : '' }}>
                         <span class="slider"></span>
                     </label>
                 </td>
@@ -209,6 +208,14 @@ tbody tr:last-child td:last-child {
         @endforeach
     </tbody>
 </table>
+
+@if(session('error'))
+    <div style="color: red; text-align: center; margin-bottom: 1rem;">
+        {{ session('error') }}
+    </div>
+@endif
+
+<div id="error-message" style="color: red; text-align: center; margin-top: 1rem;"></div>
 
 <h2 style="margin-top: 2rem;">待ち状況</h2>
 <p id="next-slot" style="text-align: center;">
@@ -236,8 +243,7 @@ tbody tr:last-child td:last-child {
                 <input type="checkbox"
                     class="toggle-waiting-btn"
                     data-id="{{ $waiting->id }}"
-                    {{ $waiting->status === 'waiting' ? 'checked' : '' }}
-                    {{ $timeSlotContext['current'] === 'closed' ? 'disabled' : '' }}> 
+                    {{ $waiting->status === 'waiting' ? 'checked' : '' }}>
                     <span class="slider"></span>
                 </label>
             </td>
