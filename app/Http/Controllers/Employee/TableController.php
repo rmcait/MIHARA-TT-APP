@@ -38,7 +38,7 @@ class TableController extends Controller
     }
 
     // currentが"closed"の場合 → 翌日 09:00 を超えるまでは切り替えNG
-    if ($currentSlotLabel === 'closed') {
+    if ($currentSlotContext === 'closed') {
         $now = now('Asia/Tokyo');
         $today9 = $now->copy()->setTime(9, 0);
 

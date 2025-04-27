@@ -285,7 +285,7 @@ tbody tr:last-child td:last-child {
                 // 状態を元に戻す（ONにしていたならOFFに戻す）
                 checkbox.prop('checked', !checkbox.prop('checked'));
             } else {
-                alert('更新に失敗しました（待ち状況）');
+                alert('更新に失敗しました（現在状況）');
                 checkbox.prop('checked', !checkbox.prop('checked'));
             }
         }
