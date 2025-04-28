@@ -44,11 +44,11 @@ class TableController extends Controller
 
         // 今が今日の9:00より前なら、今日の9:00を使う
         // 今が今日の9:00より後なら、明日の9:00を使う
-        $target9 = $now->gt($today9)
-            ? $now->copy()->addDay()->setTime(9, 0)
-            : $today9;
+        // $target9 = $now->gt($today9)
+        //     ? $now->copy()->addDay()->setTime(9, 0)
+        //     : $today9;
 
-    if ($now->lt($target9)) {
+    if ($now->lt($today9)) {
         return response()->json([
             'error' => '営業時間外です。切り替えは9:00以降に可能です。'
         ], 422);
@@ -92,11 +92,11 @@ class TableController extends Controller
     
         // 今が今日の8:30より前なら、今日の8:30を使う
         // 今が今日の8:30より後なら、明日の8:30を使う
-        $target830 = $now->gt($today830) 
-            ? $now->copy()->addDay()->setTime(8, 30)
-            : $today830;
+        // $target830 = $now->gt($today830) 
+        //     ? $now->copy()->addDay()->setTime(8, 30)
+        //     : $today830;
     
-        if ($now->lt($target830)) {
+        if ($now->lt($today830)) {
             return response()->json([
                 'error' => '営業時間外です。切り替えは8:30以降に可能です。'
             ], 422);
