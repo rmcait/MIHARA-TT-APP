@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Employee\TableController;
 use App\Http\Controllers\UserController;
 
-Route::get('/', function () {
+Route::get('/welcome', function () {
     return view('welcome');
 });
 
@@ -31,6 +31,7 @@ Route::post('/employee/waiting-lists/{id}/toggle', [TableController::class, 'tog
 
 // web.php
 Route::get('/user/tables', [UserController::class, 'index']);
+Route::get('/', [UserController::class, 'index']);
 Route::get('/user/time-slot-context', [UserController::class, 'getTimeSlotContext']);
 Route::get('/user/fetch-tables', [UserController::class, 'fetchTableStatuses']);
 Route::get('/user/fetch-waitinglists', [UserController::class, 'fetchWaitingLists']);
