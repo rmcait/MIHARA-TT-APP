@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>利用状況</title>
+    <title>テーブル状況管理</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             background: #f2f2f7;
-            padding: 1.5rem;
+            padding: 1.2rem;
             margin: 0;
         }
 
@@ -32,8 +32,10 @@
         }
 
         h2 {
+
+            border-radius: 16px;
             font-size: 1.3rem;
-            font-weight: 500;
+            font-weight: bold;
             color: #333;
             margin: 1.5rem 0 0.8rem;
             letter-spacing: -0.2px;
@@ -66,7 +68,7 @@
             background: #ADD8E6;
             font-size: 1rem;
             padding: 0.8rem;
-            text-align: left;
+            text-align: center;
             color: #555;
         }
 
@@ -84,8 +86,10 @@
         }
 
         tbody td {
+            text-align: center;
             padding: 1rem;
             font-size: 1.05rem;
+            font-weight: bold;
             border-top: 1px solid #e0e0e0;
         }
 
@@ -124,7 +128,7 @@
     width: 100%;
     background: #f9f9f9;
     display: flex;
-    gap: 2rem; /* 要素間の隙間 */
+    gap: 1.8rem; /* 要素間の隙間 */
     justify-content: center; /* アイテムを中央に配置 */
     
 }
@@ -137,24 +141,24 @@
     margin: 50px 0;
     padding: 1rem;
     background-color: #e0f7fa; /* ソフトな水色 */
-    color: #00796b; /* 深い緑 */
+    color: #43a047; /* 深い緑 */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* ソフトな影 */
     transition: background-color 0.3s, transform 0.3s;
 }
 
 .table-box.in_use {
-    background-color: #ffebee; /* ソフトな赤 */
-    color: #d32f2f; /* 赤色 */
+    background-color: #e53935; /* 濃い赤 */
+    color: #ffffff; /* 白文字 */
 }
 
 .table-box.available {
-    background-color: #e8f5e9; /* ソフトな緑 */
-    color: #388e3c; /* 深い緑 */
+    background-color: #43a047; /* 濃い緑 */
+    color: #ffffff; /* 白文字 */
 }
 
 .table-box.waiting {
-    background-color: #fff3e0; /* ソフトなオレンジ */
-    color: #f57c00; /* オレンジ色 */
+    background-color: #fb8c00; /* 濃いオレンジ */
+    color: #ffffff; /* 白文字 */
 }
 
 .table-box:hover {
@@ -170,12 +174,11 @@
 
 @media (max-width: 480px) {
     .table-layout {
-
+        gap: 0.7rem;
     }
     .table-box {
         width: 10%;
         height: 60px;
-        gap: 10px;
     }
 }
     </style>
@@ -183,10 +186,12 @@
 
 <body>
 <header>
-    <h1 class="facility-title">美原体育館 卓球室</h1>
+    <h1 class="facility-title">美原総合体育館 卓球室</h1>
 </header>
 
-<h2>現在の利用状況</h2>
+
+<h2>〜 現在の利用状況 〜</h2>
+
 <p id="current-slot" style="text-align: center;">
   - 
   @if($timeSlotContext['current'] === 'closed')
@@ -196,37 +201,6 @@
   @endif
   -
 </p>
-
-<table id="table-status-view">
-    <thead>
-        <tr>
-            <th>テーブル番号</th>
-            <th>状態</th>
-            <th>待機状況<br><span id="next-slot">{{ $timeSlotContext['next'] }}</span></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach ($tables as $table)
-            <tr data-id="{{ $table->id }}">
-                <td>{{ $table->number }}</td>
-                <td>
-                    <span class="status-text {{ $table->status === 'in_use' ? 'in_use' : 'available' }}">
-                        {{ $table->status === 'in_use' ? '利用中' : '空き' }}
-                    </span>
-                </td>
-                <td>
-                    @foreach ($table->waitingLists as $waiting)
-                        <span class="waiting-status-text {{ $waiting->status === 'waiting' ? 'waiting' : 'available' }}">
-                            {{ $waiting->status === 'waiting' ? '待機中' : '空き' }}
-                        </span>
-                    @endforeach
-                </td>
-            </tr>
-        @endforeach
-    </tbody>
-</table>
-
-<h2>卓球台の見取り図</h2>
 
 <div style="text-align: center; max-width: 960px; /* 背景の横幅を制限 */
     width: 100%;
@@ -239,7 +213,10 @@
 <div class="table-layout">
     @foreach ($tables as $table)
         <div class="table-box {{ $table->status }}" data-id="{{ $table->id }}">
-            <span>{{ $table->number }}</span>
+        <div style="font-size: 1rem; font-weight: bold;">{{ $table->number }}</div>
+        <div class="table-status-label">
+            {{ $table->status === 'in_use' ? '利用中' : ($table->status === 'available' ? '空き' : '待機中') }}
+        </div>
         </div>
     @endforeach
 </div>
@@ -251,6 +228,38 @@
     border-bottom-left-radius: 15px;
     border-bottom-right-radius: 15px;
     padding-bottom: 8px;">入り口</div>
+
+<h2>〜 現在の待機状況 〜</h2>
+
+
+<table id="table-status-view">
+    <thead>
+        <tr>
+            <th>台番号</th>
+            <!-- <th>状態</th> -->
+            <th><span id="next-slot">- {{ $timeSlotContext['next'] }} -</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach ($tables as $table)
+            <tr data-id="{{ $table->id }}">
+                <td>{{ $table->number }}</td>
+                <!-- <td>
+                    <span class="status-text {{ $table->status === 'in_use' ? 'in_use' : 'available' }}">
+                        {{ $table->status === 'in_use' ? '利用中' : '空き' }}
+                    </span>
+                </td> -->
+                <td>
+                    @foreach ($table->waitingLists as $waiting)
+                        <span class="waiting-status-text {{ $waiting->status === 'waiting' ? 'waiting' : 'available' }}">
+                            {{ $waiting->status === 'waiting' ? '待機中' : '空き' }}
+                        </span>
+                    @endforeach
+                </td>
+            </tr>
+        @endforeach
+    </tbody>
+</table>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
