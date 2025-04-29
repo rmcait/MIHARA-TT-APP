@@ -41,6 +41,7 @@ class TableController extends Controller
     if ($currentSlotContext === 'closed') {
         $now = now('Asia/Tokyo');
         $today9 = $now->copy()->setTime(9, 0);
+        $today21 = $now->copy()->setTime(21, 0);
 
         // 今が今日の9:00より前なら、今日の9:00を使う
         // 今が今日の9:00より後なら、明日の9:00を使う
@@ -48,9 +49,9 @@ class TableController extends Controller
         //     ? $now->copy()->addDay()->setTime(9, 0)
         //     : $today9;
 
-    if ($now->lt($today9)) {
+    if ($now->lt($today9) || $now->gte($today21)) {
         return response()->json([
-            'error' => '営業時間外です。切り替えは9:00以降に可能です。'
+            'error' => '営業時間外です。切り替えは9:00～21:00の間に可能です。'
         ], 422);
     }
 }
@@ -89,6 +90,7 @@ class TableController extends Controller
     if ($nextSlotLabel === 'closed' || $nextSlotLabel === '09:00 ~ 11:00') {
         $now = now('Asia/Tokyo');
         $today830 = $now->copy()->setTime(8, 30);
+        $today21 = $now->copy()->setTime(21, 0);
     
         // 今が今日の8:30より前なら、今日の8:30を使う
         // 今が今日の8:30より後なら、明日の8:30を使う
@@ -96,9 +98,9 @@ class TableController extends Controller
         //     ? $now->copy()->addDay()->setTime(8, 30)
         //     : $today830;
     
-        if ($now->lt($today830)) {
+        if ($now->lt($today830) || $now->gte($today21)) {
             return response()->json([
-                'error' => '営業時間外です。切り替えは8:30以降に可能です。'
+                'error' => '営業時間外です。切り替えは8:30～21:00の間に可能です。'
             ], 422);
         }
     } else {
