@@ -229,8 +229,8 @@
     border-bottom-right-radius: 15px;
     padding-bottom: 8px;">入り口</div>
 
-<h2>〜 現在の待機状況 〜</h2>
-
+<h2>〜 次の待機状況 〜</h2>
+<p style="text-align: center; color: red;">※利用開始時刻の30分前から表示が反映されます。</p>
 
 <table id="table-status-view">
     <thead>
