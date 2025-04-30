@@ -98,7 +98,7 @@ class TableController extends Controller
         //     ? $now->copy()->addDay()->setTime(8, 30)
         //     : $today830;
     
-        if ($now->lt($today830) || $now->gte($today21)) {
+        if ($now->lt($today830) || $now->gte($today21) || $nextSlotLabel === 'closed') {
             return response()->json([
                 'error' => '営業時間外です。切り替えは8:30～21:00の間に可能です。'
             ], 422);
