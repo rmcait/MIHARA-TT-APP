@@ -134,12 +134,12 @@
 }
 
 .table-box {
-    width: 13%; /* デフォルトで1列 */
+    width: 16% !important; /* デフォルトで1列 */
     height: 200px;
     border-radius: 12px;
     text-align: center;
     margin: 50px 0;
-    padding: 1rem;
+    padding: 0.5rem;
     background-color: #e0f7fa; /* ソフトな水色 */
     color: #43a047; /* 深い緑 */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* ソフトな影 */
@@ -177,8 +177,8 @@
         gap: 0.7rem;
     }
     .table-box {
-        width: 10%;
-        height: 60px;
+        width: 13%;
+        height: 70px;
     }
 }
     </style>
