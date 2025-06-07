@@ -358,6 +358,24 @@ $('.toggle-waiting-btn').on('change', function () {
     });
 });
 
+$(document).ready(function () {
+    axios.get('/employee/closed-today-check') // Laravelが返す: { closed: true / false }
+        .then(res => {
+            if (res.data.closed) {
+                isClosedToday = true;
+                $('#closed-toggle').prop('checked', true); // トグルON
+                $('#closed-toggle-label').css('color', '#ff3b30'); // ラベルも赤に
+            } else {
+                isClosedToday = false;
+                $('#closed-toggle').prop('checked', false); // トグルOFF
+                $('#closed-toggle-label').css('color', '');
+            }
+        })
+        .catch(() => {
+            console.error('休館日チェックに失敗しました');
+        });
+});
+
 $('#closed-toggle').on('change', function () {
     const checkbox = $(this);
     const isChecked = checkbox.is(':checked');
