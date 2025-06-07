@@ -22,6 +22,12 @@ class TableController extends Controller
     // 利用状況を切り替える処理（AJAX用）
     public function toggleStatus(Request $request, $id)
     {
+        if (cache()->get('closed_day') === now()->format('Y-m-d')) {
+            return response()->json([
+                'error' => '本日は休館日です。操作できません。'
+            ], 422);
+        }
+
         $table = Table::findOrFail($id);
         $timesSlotContext = WaitingList::getTimeSlotWithContext();
 
@@ -67,6 +73,12 @@ class TableController extends Controller
     // 待機リストの状態を切り替える処理（AJAX用）
     public function toggleWaitingStatus(Request $request, $id)
 {
+    if (cache()->get('closed_day') === now()->format('Y-m-d')) {
+        return response()->json([
+            'error' => '本日は休館日です。操作できません。'
+        ], 422);
+    }
+
     $waiting = WaitingList::findOrFail($id);
 
     $now = now('Asia/Tokyo');
@@ -152,4 +164,31 @@ class TableController extends Controller
             $timeSlotContext = WaitingList::getTimeSlotWithContext();
             return response()->json($timeSlotContext);
         }
+    
+    // 休館処理：全テーブルと待ちリストを「空き」にして、休館フラグをセッションに保存
+    public function setClosedToday(Request $request)
+    {
+        Table::query()->update(['status' => Table::STATUS_AVAILABLE]);
+        WaitingList::query()->update(['status' => 'available']);
+
+        // 今日の日付でキャッシュ保存
+        cache()->put('closed_day', now()->format('Y-m-d'));
+
+        return response()->json(['message' => '本日を休館日に設定しました']);
+    }
+
+    // 本日休館の解除処理
+    public function unsetClosedToday(Request $request)
+    {
+        cache()->forget('closed_day');
+        return response()->json(['message' => '休館日設定を解除しました']);
+    }
+
+    public function getClosedToday()
+{
+    $closedDate = cache()->get('closed_day');
+    $isClosedToday = $closedDate === now()->format('Y-m-d');
+
+    return response()->json(['closed' => $isClosedToday]);
+}
 }

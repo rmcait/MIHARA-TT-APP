@@ -136,6 +136,18 @@ tbody tr:last-child td:last-child {
         transform: translateX(26px);
     }
 
+    input:checked + .slider:before {
+        transform: translateX(26px);
+    }
+
+    /* 本日休館 ON の時に赤くする専用スタイル */
+    input#closed-toggle:checked + .slider {
+        background-color: #ff3b30; /* 赤 */
+    }
+    input#closed-toggle:checked + .slider:before {
+        transform: translateX(26px);
+    }
+
     @media (max-width: 320px) {
     .facility-title {
         font-size: 1.4rem;
@@ -159,6 +171,11 @@ tbody tr:last-child td:last-child {
         }
 
         input:checked + .slider:before {
+            transform: translateX(22px);
+        }
+
+        /* 本日休館用（ID指定） */
+        input#closed-toggle:checked + .slider:before {
             transform: translateX(22px);
         }
     }
@@ -252,6 +269,16 @@ tbody tr:last-child td:last-child {
     </tbody>
 </table>
 
+<div id="closed-toggle-wrapper" style="text-align: center; margin-top: 2rem;">
+    <div style="display: flex; flex-direction: column; align-items: center;">
+        <h2 id="closed-toggle-label" style="margin-top: 2rem;">本日休館</h2>
+        <label class="switch" style="margin-top: 0.5rem;">
+            <input type="checkbox" id="closed-toggle">
+            <span class="slider"></span>
+        </label>
+    </div>
+</div>
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
@@ -331,6 +358,57 @@ $('.toggle-waiting-btn').on('change', function () {
     });
 });
 
+$('#closed-toggle').on('change', function () {
+    const checkbox = $(this);
+    const isChecked = checkbox.is(':checked');
+
+    if (isChecked) {
+        // ON（休館にする）
+        const confirmed = confirm('本日を休館日に設定します。よろしいですか？');
+        if (!confirmed) {
+            checkbox.prop('checked', false);
+            return;
+        }
+
+        axios.post('/employee/closed-today')
+            .then(() => {
+                isClosedToday = true;
+
+                $('.toggle-btn, .toggle-waiting-btn').each(function () {
+                    $(this).prop('checked', false); // 状態リセットのみ（disableはしない）
+                });
+
+                $('.status-text, .waiting-status-text').text('空き').css('color', '#34c759');
+
+                alert('✅本日を休館日に設定しました');
+            })
+            .catch(() => {
+                alert('休館処理に失敗しました');
+                checkbox.prop('checked', false);
+            });
+
+    } else {
+        // OFF（解除する）
+        const confirmed = confirm('本日休館を解除しますか？');
+        if (!confirmed) {
+            checkbox.prop('checked', true); // チェックを戻す
+            return;
+        }
+
+        axios.post('/employee/unset-closed-today')
+            .then(() => {
+                isClosedToday = false;
+                $('#closed-toggle-label').css('color', '');
+
+                alert('休館日設定を解除しました');
+            })
+            .catch(() => {
+                alert('解除処理に失敗しました');
+                checkbox.prop('checked', true);
+            });
+    }
+});
+
 // 1分ごとに自動更新をトリガーする
 setInterval(() => {
         axios.post('/user/trigger-auto-update')
@@ -380,9 +458,21 @@ setInterval(() => {
     });
 
     $.get('/employee/timeslot-context', function (slotContext) {
-        const currentText = slotContext.current === 'closed' ? '営業時間外' : slotContext.current;
-        $('#current-slot').text(`- ${currentText} -`);
+        if (slotContext.isHoliday) {
+        // 本日休館日の場合、current も next も赤字表示
+        $('#current-slot').html('- <span style="color: #ff3b30;">本日休館日</span> -');
+        $('#next-slot').html('- <span style="color: #ff3b30;">本日休館日</span> -');
+    } else {
+        // current の通常表示
+        if (slotContext.current === 'closed') {
+            $('#current-slot').text('- 営業時間外 -');
+        } else {
+            $('#current-slot').text(`- ${slotContext.current} -`);
+        }
+
+        // next の通常表示
         $('#next-slot').text(`- ${slotContext.next} -`);
+    }
     });
 }, 5000); // 5秒ごとに監視して更新
 </script>

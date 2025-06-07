@@ -38,6 +38,15 @@ Route::get('/user/fetch-waitinglists', [UserController::class, 'fetchWaitingList
 
 Route::post('/user/trigger-auto-update', [UserController::class, 'triggerAutoUpdate']);
 
+// routes/web.php に追加
+Route::post('/employee/closed-today', [TableController::class, 'setClosedToday']);
+// routes/web.php
+Route::post('/employee/unset-closed-today', [TableController::class, 'unsetClosedToday']);
+
+// routes/web.php
+Route::get('/employee/closed-today-check', [TableController::class, 'getClosedToday']);
+
+
 
 
 require __DIR__.'/auth.php';

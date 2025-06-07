@@ -194,7 +194,9 @@
 
 <p id="current-slot" style="text-align: center;">
   - 
-  @if($timeSlotContext['current'] === 'closed')
+  @if($timeSlotContext['isHoliday'] ?? false)
+      <span style="color: #ff3b30;">本日休館日</span>
+  @elseif($timeSlotContext['current'] === 'closed')
       営業時間外
   @else
       {{ $timeSlotContext['current'] }}
@@ -320,9 +322,15 @@
         }
     });
 
-    $.get('/user/time-slot-context', function (res) {
-        // current の更新
-        if (res.current === 'closed') {
+    $.ajax({
+    url: '/user/time-slot-context',
+    method: 'GET',
+    dataType: 'json',
+    success: function (res) {
+        // current の更新（休館日対応）
+        if (res.isHoliday) {
+            $('#current-slot').html('- <span style="color: #ff3b30; font-weight: bold;">本日休館日</span> -');
+        } else if (res.current === 'closed') {
             $('#current-slot').text('- 営業時間外 -');
         } else {
             $('#current-slot').text(`- ${res.current} -`);
@@ -330,7 +338,13 @@
 
         // next の更新
         $('#next-slot').text(`- ${res.next} -`);
-    });
+    },
+    error: function (xhr, status, error) {
+        console.error('エラーが発生しました:', error);
+        $('#current-slot').text('- データ取得失敗 -');
+        $('#next-slot').text('-');
+    }
+});
 
 }, 5000);  // 5秒ごとに更新
 </script>

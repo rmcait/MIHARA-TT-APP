@@ -29,6 +29,20 @@ class WaitingList extends Model
     {
         $now = Carbon::now('Asia/Tokyo'); // 現在の時刻（日本時間）
 
+        $closedDate = cache()->get('closed_day');
+        $isHoliday = $closedDate === $now->format('Y-m-d');
+
+        // 🔴 本日休館日の場合：専用状態を返す（時間スロット処理はスキップ）
+        if ($isHoliday) {
+            return [
+                'now'      => $now,
+                'previous' => '本日休館日',
+                'current'  => '本日休館日',  // closed とは別
+                'next'     => '本日休館日',
+                'isHoliday' => true,
+            ];
+        }
+
         // 特別処理として、8:30から9:00の間はnextが9:00 - 11:00になるようにする
         $eightThirty = Carbon::createFromFormat('H:i', '08:30');
         $nine = Carbon::createFromFormat('H:i', '09:00');
